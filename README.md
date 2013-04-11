@@ -9,26 +9,47 @@ there an object, and an attribute ...
 
 Usage:
 
+The complex variable
+--------------------
+
 <pre>
-// The complex variable:
 $myComplexVar = array(1 => new stdClass());
 $myComplexVar[1]->name = 'John Doe';
+</pre>
 
-// Checking if the nested value exist:
+Checking if the nested value exist
+----------------------------------
+<pre>
 VarCheck::instance($myComplexVar)->key(1)->attr('name')->exist(); // TRUE;
-// Get the nested value:
+</pre>
+
+Get the nested value
+--------------------
+<pre>
 VarCheck::instance($myComplexVar)->key(1)->attr('name')->value(); // John Doe;
-// Failsafe check in case it does not exist:
+</pre>
+
+Failsafe check in case it does not exist
+----------------------------------------
+<pre>
 VarCheck::instance($myComplexVar)->key(1)->attr('job')->exist(); // FALSE;
 VarCheck::instance($myComplexVar)->key(1)->attr('job')->attr('title')->exist(); // FALSE;
+</pre>
 
-// Check and value at the same time:
+Check and value at the same time
+--------------------------------
+<pre>
 if ($value = VarCheck::instance($form_status)->key('values')->key('#node')->attr('field_image')->key(LANGUAGE_NONE)->key(0)->key('item')->key('fid')->value()) {
   // Use $value;
 }
+</pre>
 
-// Custom validation:
+Custom validation
+-----------------
+<pre>
 VarCheck::instance($myVar)->key(3)->attr('title')->validateWith(function($v) {
   return $v > 10;
 });
 </pre>
+
+Tests are available.
