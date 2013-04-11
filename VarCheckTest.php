@@ -135,4 +135,22 @@ class VarCheckTest extends PHPUnit_Framework_TestCase {
     );
   }
 
+  public function testValidationCallback() {
+    $this->assertTrue(
+      VarCheck::instance($this->object)->attr('bar')->attr('baz')->validateWith(function($v) {
+        return is_numeric($v);
+      }),
+      'Object is numeric.'
+    );
+  }
+
+  public function testValidationCallbackFail() {
+    $this->assertFalse(
+      VarCheck::instance($this->object)->attr('bar')->attr('baz')->validateWith(function($v) {
+        return is_string($v);
+      }),
+      'Object is numeric.'
+    );
+  }
+
 }

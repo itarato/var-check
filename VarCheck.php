@@ -108,4 +108,16 @@ class VarCheck {
     return $this->value;
   }
 
+  /**
+   * Universal validator.
+   *
+   * @param callable $callback
+   *  Custom function to for value validation. Has to return a BOOL value.
+   * @return Bool
+   *  Validation success.
+   */
+  public function validateWith(callable $callback) {
+    return $callback($this->value);
+  }
+
 }
