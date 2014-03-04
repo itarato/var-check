@@ -1,6 +1,10 @@
 VarCheck
 =========
 
+
+[![Build Status](https://travis-ci.org/itarato/var-check.png?branch=master)](https://travis-ci.org/itarato/var-check)
+
+
 VarCheck is a single class to verify nested complex variable without lots of isset() and exist().
 
 To avoid multiple level of isset/exist/etc this class provides an easy way to verify nested values in a variable.
