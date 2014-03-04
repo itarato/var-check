@@ -101,11 +101,14 @@ class VarCheck {
   /**
    * Returns the value.
    *
+   * @param mixed $default_value
+   *  Value to return if the original value does not exist.
+   *
    * @return Mixed
    *  Value.
    */
-  public function value() {
-    return $this->value;
+  public function value($default_value = FALSE) {
+    return isset($this->value) ? $this->value : $default_value;
   }
 
   /**
