@@ -15,10 +15,10 @@
  * Usage:
  * $myComplexVar = array(1 => new stdClass());
  * $myComplexVar[1]->name = 'John Doe';
- * VarCheck::instance($myComplexVar)->key(1)->attr('name')->exist(); // TRUE;
- * VarCheck::instance($myComplexVar)->key(1)->attr('name')->value(); // John Doe;
- * VarCheck::instance($myComplexVar)->key(1)->attr('job')->exist(); // FALSE;
- * VarCheck::instance($myComplexVar)->key(1)->attr('job')->attr('title')->exist(); // FALSE;
+ * VarCheck::take($myComplexVar)->key(1)->attr('name')->exist(); // TRUE;
+ * VarCheck::take($myComplexVar)->key(1)->attr('name')->value(); // John Doe;
+ * VarCheck::take($myComplexVar)->key(1)->attr('job')->exist(); // FALSE;
+ * VarCheck::take($myComplexVar)->key(1)->attr('job')->attr('title')->exist(); // FALSE;
  */
 class VarCheck {
 
@@ -31,7 +31,7 @@ class VarCheck {
 
   /**
    * Constructor.
-   * Can be called directly, or just simply through: VarCheck::instance($value);
+   * Can be called directly, or just simply through: VarCheck::take($value);
    *
    * @param Mixed $value
    *  Variable.
@@ -45,10 +45,11 @@ class VarCheck {
    *
    * @param Mixed $value
    *  Variable.
+   * 
    * @return VarCheck
    *  Instance object.
    */
-  public static function instance($value) {
+  public static function take($value) {
     return new VarCheck($value);
   }
 
@@ -67,6 +68,7 @@ class VarCheck {
    *
    * @param String|Integer $attr
    *  Attribute string.
+   *
    * @return VarCheck $this
    *  Instance.
    */
@@ -85,6 +87,7 @@ class VarCheck {
    *
    * @param String|Integer $key
    *  Key string.
+   *
    * @return VarCheck $this
    *  Instance.
    */
@@ -114,8 +117,9 @@ class VarCheck {
   /**
    * Universal validator.
    *
-   * @param callable $callback
+   * @param Closure $callback
    *  Custom function to for value validation. Has to return a BOOL value.
+   *
    * @return Bool
    *  Validation success.
    */

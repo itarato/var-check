@@ -37,25 +37,25 @@ class VarCheckTest extends PHPUnit_Framework_TestCase {
 
   public function testValue() {
     $this->assertEquals(
-      VarCheck::instance($this->var)->value(),
+      VarCheck::take($this->var)->value(),
       'foobar',
       'Value is foobar'
     );
 
     $this->assertEquals(
-      VarCheck::instance($this->array)->key('foo')->key('bar')->value(),
+      VarCheck::take($this->array)->key('foo')->key('bar')->value(),
       1,
       'Array is 1'
     );
 
     $this->assertEquals(
-      VarCheck::instance($this->object)->attr('bar')->attr('baz')->value(),
+      VarCheck::take($this->object)->attr('bar')->attr('baz')->value(),
       1,
       'Object is 1'
     );
 
     $this->assertEquals(
-      VarCheck::instance($this->mixed)->key('object')->attr('foo')->value(),
+      VarCheck::take($this->mixed)->key('object')->attr('foo')->value(),
       'bar',
       'Mixed is bar'
     );
@@ -63,22 +63,22 @@ class VarCheckTest extends PHPUnit_Framework_TestCase {
 
   public function testExist() {
     $this->assertTrue(
-      VarCheck::instance($this->var)->exist(),
+      VarCheck::take($this->var)->exist(),
       'Var exists'
     );
 
     $this->assertTrue(
-      VarCheck::instance($this->array)->key('foo')->key('bar')->exist(),
+      VarCheck::take($this->array)->key('foo')->key('bar')->exist(),
       'Array exists'
     );
 
     $this->assertTrue(
-      VarCheck::instance($this->object)->attr('bar')->attr('baz')->exist(),
+      VarCheck::take($this->object)->attr('bar')->attr('baz')->exist(),
       'Object exists'
     );
 
     $this->assertTrue(
-      VarCheck::instance($this->mixed)->key('object')->attr('foo')->exist(),
+      VarCheck::take($this->mixed)->key('object')->attr('foo')->exist(),
       'Mixed exists'
     );
   }
@@ -86,58 +86,58 @@ class VarCheckTest extends PHPUnit_Framework_TestCase {
   public function testNotExist() {
     $missing_value = NULL;
     $this->assertFalse(
-      VarCheck::instance($missing_value)->exist()
+      VarCheck::take($missing_value)->exist()
     );
 
     $this->assertFalse(
-      VarCheck::instance($this->var)->attr('foo')->exist(),
+      VarCheck::take($this->var)->attr('foo')->exist(),
       'Var does not exists'
     );
 
     $this->assertFalse(
-      VarCheck::instance($this->var)->key('foo')->exist(),
+      VarCheck::take($this->var)->key('foo')->exist(),
       'Var does not exists'
     );
 
     $this->assertFalse(
-      VarCheck::instance($this->var)->key('foo')->attr('foo')->exist(),
+      VarCheck::take($this->var)->key('foo')->attr('foo')->exist(),
       'Var does not exists'
     );
 
     $this->assertFalse(
-      VarCheck::instance($this->array)->key('foo')->key('foo')->exist(),
+      VarCheck::take($this->array)->key('foo')->key('foo')->exist(),
       'Array does not exists'
     );
 
     $this->assertFalse(
-      VarCheck::instance($this->array)->key(123)->key('foo')->exist(),
+      VarCheck::take($this->array)->key(123)->key('foo')->exist(),
       'Array does not exists'
     );
 
     $this->assertFalse(
-      VarCheck::instance($this->object)->attr('rabbit')->exist(),
+      VarCheck::take($this->object)->attr('rabbit')->exist(),
       'Object does not exists'
     );
 
     $this->assertFalse(
-      VarCheck::instance($this->object)->attr('rabbit')->attr('chicken')->exist(),
+      VarCheck::take($this->object)->attr('rabbit')->attr('chicken')->exist(),
       'Object does not exists'
     );
 
     $this->assertFalse(
-      VarCheck::instance($this->mixed)->attr('object')->attr('foo')->exist(),
+      VarCheck::take($this->mixed)->attr('object')->attr('foo')->exist(),
       'Mixed does not exists'
     );
 
     $this->assertFalse(
-      VarCheck::instance($this->mixed)->key('object')->key('foo')->exist(),
+      VarCheck::take($this->mixed)->key('object')->key('foo')->exist(),
       'Mixed does not exists'
     );
   }
 
   public function testValidationCallback() {
     $this->assertTrue(
-      VarCheck::instance($this->object)->attr('bar')->attr('baz')->validateWith(function($v) {
+      VarCheck::take($this->object)->attr('bar')->attr('baz')->validateWith(function($v) {
         return is_numeric($v);
       }),
       'Object is numeric.'
@@ -146,7 +146,7 @@ class VarCheckTest extends PHPUnit_Framework_TestCase {
 
   public function testValidationCallbackFail() {
     $this->assertFalse(
-      VarCheck::instance($this->object)->attr('bar')->attr('baz')->validateWith(function($v) {
+      VarCheck::take($this->object)->attr('bar')->attr('baz')->validateWith(function($v) {
         return is_string($v);
       }),
       'Object is numeric.'
@@ -155,8 +155,15 @@ class VarCheckTest extends PHPUnit_Framework_TestCase {
 
   public function testDefaultValue() {
     $default_value = 'foobar';
-    $this->assertEquals(VarCheck::instance($this->object)->attr('abc')->key('not exist')->value(), FALSE, 'Default value is False if value does not exist.');
-    $this->assertEquals(VarCheck::instance($this->object)->attr('abc')->key('not exist')->value($default_value), $default_value, 'Default value is defined if value does not exist.');
+    $this->assertEquals(VarCheck::take($this->object)->attr('abc')->key('not exist')->value(), FALSE, 'Default value is False if value does not exist.');
+    $this->assertEquals(VarCheck::take($this->object)->attr('abc')->key('not exist')->value($default_value), $default_value, 'Default value is defined if value does not exist.');
+  }
+
+  public function testNonStaticGeneration() {
+    $check = new VarCheck($this->object);
+    $check->attr('bar');
+    $check->attr('baz');
+    $this->assertTrue($check->exist(), 'Value exist');
   }
 
 }

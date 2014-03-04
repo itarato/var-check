@@ -12,13 +12,6 @@ Typical use case when you have a large variable, and you are not sure if it has 
 there an object, and an attribute ...
 
 
-Problem to solve
-----------------
-
-
-#Solution
-
-
 The complex variable
 --------------------
 
@@ -28,39 +21,58 @@ $myComplexVar[1]->name = 'John Doe';
 ```
 
 
+Problem to solve
+----------------
+
+```php
+// Get the value:
+$output = isset($myComplexVar[1]) && isset($myComplexVar[1]->name) ? $myComplexVar[1]->name : $otherwise;
+```
+
+
+# Solution
+
+```php
+$output = VarCheck::take($myComplexVar)->key(1)->attr('name')->value($otherwise);
+```
+
+
 Checking if the nested value exist
 ----------------------------------
-<pre>
-VarCheck::instance($myComplexVar)->key(1)->attr('name')->exist(); // TRUE;
-</pre>
+
+```php
+VarCheck::take($myComplexVar)->key(1)->attr('name')->exist(); // TRUE;
+```
 
 Get the nested value
 --------------------
-<pre>
-VarCheck::instance($myComplexVar)->key(1)->attr('name')->value(); // John Doe;
-</pre>
+
+```php
+VarCheck::take($myComplexVar)->key(1)->attr('name')->value(); // John Doe;
+```
 
 Failsafe check in case it does not exist
 ----------------------------------------
-<pre>
-VarCheck::instance($myComplexVar)->key(1)->attr('job')->exist(); // FALSE;
-VarCheck::instance($myComplexVar)->key(1)->attr('job')->attr('title')->exist(); // FALSE;
-</pre>
+
+```php
+VarCheck::take($myComplexVar)->key(1)->attr('job')->exist(); // FALSE;
+VarCheck::take($myComplexVar)->key(1)->attr('job')->attr('title')->exist(); // FALSE;
+```
 
 Check and value at the same time
 --------------------------------
-<pre>
-if ($value = VarCheck::instance($form_status)->key('values')->key('#node')->attr('field_image')->key(LANGUAGE_NONE)->key(0)->key('item')->key('fid')->value()) {
+
+```php
+if ($value = VarCheck::take($form_status)->key('values')->key('#node')->attr('field_image')->key(LANGUAGE_NONE)->key(0)->key('item')->key('fid')->value()) {
   // Use $value;
 }
-</pre>
+```
 
 Custom validation
 -----------------
-<pre>
-VarCheck::instance($myVar)->key(3)->attr('title')->validateWith(function($v) {
+
+```php
+VarCheck::take($myVar)->key(3)->attr('title')->validateWith(function ($v) {
   return $v > 10;
 });
-</pre>
-
-Tests are available.
+```
