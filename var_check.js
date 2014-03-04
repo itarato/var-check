@@ -25,7 +25,7 @@
  * var_check(obj).key(1).key('foo').key('foo').value(); // undefined
  * @endcode
  */
-var_check = function (value) {
+var var_check = function (value) {
   return {
     key: function (attr) {
       return value && value.hasOwnProperty(attr) ? var_check(value[attr]) : var_check(undefined);
