@@ -30,6 +30,9 @@ var_check = function (value) {
     key: function (attr) {
       return value && value.hasOwnProperty(attr) ? var_check(value[attr]) : var_check(undefined);
     },
+    exist: function () {
+      return value !== undefined;
+    },
     value: function () {
       return value;
     }
