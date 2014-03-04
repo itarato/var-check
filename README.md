@@ -11,15 +11,21 @@ To avoid multiple level of isset/exist/etc this class provides an easy way to ve
 Typical use case when you have a large variable, and you are not sure if it has the right index, and inside
 there an object, and an attribute ...
 
-Usage:
+
+Problem to solve
+----------------
+
+
+#Solution
+
 
 The complex variable
 --------------------
 
-<pre>
-$myComplexVar = array(1 => new stdClass());
-$myComplexVar[1]->name = 'John Doe';
-</pre>
+    <?php
+    $myComplexVar = array(1 => new stdClass());
+    $myComplexVar[1]->name = 'John Doe';
+
 
 Checking if the nested value exist
 ----------------------------------
