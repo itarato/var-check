@@ -22,9 +22,10 @@ Problem to solve
 The complex variable
 --------------------
 
-    <?php
+    ```php
     $myComplexVar = array(1 => new stdClass());
     $myComplexVar[1]->name = 'John Doe';
+    ```
 
 
 Checking if the nested value exist
