@@ -153,4 +153,10 @@ class VarCheckTest extends PHPUnit_Framework_TestCase {
     );
   }
 
+  public function testDefaultValue() {
+    $default_value = 'foobar';
+    $this->assertEquals(VarCheck::instance($this->object)->attr('abc')->key('not exist')->value(), FALSE, 'Default value is False if value does not exist.');
+    $this->assertEquals(VarCheck::instance($this->object)->attr('abc')->key('not exist')->value($default_value), $default_value, 'Default value is defined if value does not exist.');
+  }
+
 }
