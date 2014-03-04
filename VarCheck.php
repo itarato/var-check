@@ -119,7 +119,7 @@ class VarCheck {
    * @return Bool
    *  Validation success.
    */
-  public function validateWith(callable $callback) {
+  public function validateWith(Closure $callback) {
     return $callback($this->value);
   }
 
