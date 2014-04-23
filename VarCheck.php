@@ -127,4 +127,25 @@ class VarCheck {
     return $callback($this->value);
   }
 
+  /**
+   * Magic getter to make accessing properties even simpler.
+   * Because of the limitations of the magic getter we try to guess if it's an array or object.
+   * Key
+   *
+   * @param $key
+   * @return $this
+   */
+  public function __get($key) {
+    if (isset($this->value) && is_object($this->value) && isset($this->value->{$key})) {
+      $this->value = $this->value->{$key};
+    }
+    elseif (isset($this->value) && is_array($this->value) && array_key_exists($key, $this->value)) {
+      $this->value = $this->value[$key];
+    }
+    else {
+      unset($this->value);
+    }
+    return $this;
+  }
+
 }

@@ -166,4 +166,24 @@ class VarCheckTest extends PHPUnit_Framework_TestCase {
     $this->assertTrue($check->exist(), 'Value exist');
   }
 
+  public function testMagicGetterWay() {
+    $this->assertEquals(VarCheck::take($this->mixed)->var->value(), 'foobar');
+    $this->assertEquals(VarCheck::take($this->mixed)->array->foo->bar->value(), 1);
+    $this->assertEquals(VarCheck::take($this->mixed)->array->{'2'}->value(), FALSE);
+    $this->assertEquals(VarCheck::take($this->mixed)->object->foo->value(), 'bar');
+    $this->assertEquals(VarCheck::take($this->mixed)->object->bar->baz->value(), 1);
+
+    $this->assertTrue(VarCheck::take($this->mixed)->var->exist());
+    $this->assertTrue(VarCheck::take($this->mixed)->array->foo->bar->exist());
+    $this->assertTrue(VarCheck::take($this->mixed)->array->{'2'}->exist());
+    $this->assertTrue(VarCheck::take($this->mixed)->object->exist());
+    $this->assertTrue(VarCheck::take($this->mixed)->object->bar->exist());
+
+    $this->assertFalse(VarCheck::take($this->mixed)->var2->exist());
+    $this->assertFalse(VarCheck::take($this->mixed)->array->foo->bar->baz->exist());
+    $this->assertFalse(VarCheck::take($this->mixed)->array->{'5'}->exist());
+    $this->assertFalse(VarCheck::take($this->mixed)->object_fake->exist());
+    $this->assertFalse(VarCheck::take($this->mixed)->object->bar->{'3'}->exist());
+  }
+
 }

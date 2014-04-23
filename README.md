@@ -34,6 +34,8 @@ $output = isset($myComplexVar[1]) && isset($myComplexVar[1]->name) ? $myComplexV
 
 ```php
 $output = VarCheck::take($myComplexVar)->key(1)->attr('name')->value($otherwise);
+// or even simpler:
+$output = VarCheck::take($myComplexVar)->{'1'}->name->value($otherwise);
 ```
 
 
@@ -42,6 +44,8 @@ Checking if the nested value exist
 
 ```php
 VarCheck::take($myComplexVar)->key(1)->attr('name')->exist(); // TRUE;
+// or:
+VarCheck::take($myComplexVar)->{'1'}->name->exist(); // TRUE;
 ```
 
 Get the nested value
@@ -64,6 +68,10 @@ Check and value at the same time
 
 ```php
 if ($value = VarCheck::take($form_status)->key('values')->key('#node')->attr('field_image')->key(LANGUAGE_NONE)->key(0)->key('item')->key('fid')->value()) {
+  // Use $value;
+}
+// or:
+if ($value = VarCheck::take($form_status)->values->{'#node'}->field_image->{LANGUAGE_NONE}->{'0'}->item->fid->value()) {
   // Use $value;
 }
 ```
