@@ -117,14 +117,20 @@ class VarCheck {
   /**
    * Universal validator.
    *
-   * @param Closure $callback
+   * @param callable $callback
    *  Custom function to for value validation. Has to return a BOOL value.
+   * @param mixed
+   *  All additional arguments go to the validator.
    *
    * @return Bool
    *  Validation success.
    */
-  public function validateWith(Closure $callback) {
-    return $callback($this->value);
+  public function validateWith(callable $callback) {
+    $extra_arguments = func_get_args();
+    array_shift($extra_arguments);
+    array_unshift($extra_arguments, $this->value);
+
+    return call_user_func_array($callback, $extra_arguments);
   }
 
   /**
@@ -146,6 +152,27 @@ class VarCheck {
       unset($this->value);
     }
     return $this;
+  }
+
+  /**
+   * Magic __call() method.
+   * Used to call a function on the stored value - if exist.
+   *
+   * @param $name
+   *  Name of the called function.
+   * @param array $arguments
+   *  Extra arguments for the function.
+   * @return mixed|null
+   *  The return value of the called function, or NULL if the value is invalid.
+   */
+  public function __call($name, array $arguments = array()) {
+    // No value - call nothing.
+    if (!$this->exist()) {
+      return NULL;
+    }
+
+    array_unshift($arguments, $this->value);
+    return call_user_func_array($name, $arguments);
   }
 
 }

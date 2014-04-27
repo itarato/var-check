@@ -142,6 +142,12 @@ class VarCheckTest extends PHPUnit_Framework_TestCase {
       }),
       'Object is numeric.'
     );
+
+    $this->assertTrue(
+      VarCheck::take($this->mixed)->var->validateWith(function ($string_a, $string_b) {
+        return $string_a === $string_b;
+      }, 'foobar')
+    );
   }
 
   public function testValidationCallbackFail() {
@@ -150,6 +156,12 @@ class VarCheckTest extends PHPUnit_Framework_TestCase {
         return is_string($v);
       }),
       'Object is numeric.'
+    );
+
+    $this->assertFalse(
+      VarCheck::take($this->mixed)->var->validateWith(function ($string_a, $string_b) {
+        return $string_a === $string_b;
+      }, 'foobar_no_match')
     );
   }
 
@@ -184,6 +196,28 @@ class VarCheckTest extends PHPUnit_Framework_TestCase {
     $this->assertFalse(VarCheck::take($this->mixed)->array->{'5'}->exist());
     $this->assertFalse(VarCheck::take($this->mixed)->object_fake->exist());
     $this->assertFalse(VarCheck::take($this->mixed)->object->bar->{'3'}->exist());
+  }
+
+  public function testFunctionCallOnValue() {
+    $this->assertEquals(VarCheck::take($this->mixed)->array->foo->bar->min(2), 1);
+    $this->assertEquals(VarCheck::take($this->mixed)->array->foo->bar->min(-2), -2);
+    $this->assertEquals(VarCheck::take($this->mixed)->array->foo->bar->max(2), 2);
+    $this->assertEquals(VarCheck::take($this->mixed)->array->foo->bar->max(-2), 1);
+
+    $array_sample = array(
+      'foo' => array(1, 2, 3, 4),
+    );
+    $this->assertEquals(VarCheck::take($array_sample)->foo->count(), 4);
+
+    // Non existent value calls.
+    $this->assertNull(VarCheck::take($array_sample)->bar->count());
+  }
+
+  public function testCloning() {
+    $item = VarCheck::take($this->mixed);
+    $item_clone = clone $item;
+    $this->assertEquals($item->var->value(), 'foobar');
+    $this->assertEquals($item_clone->var->value(), 'foobar');
   }
 
 }
