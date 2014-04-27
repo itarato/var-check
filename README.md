@@ -64,7 +64,7 @@ Call a function on the value if exist
 // Instead of this:
 $value = isset($variable['key']['foo']->element) ? my_function($variable['key']['foo']->element) : NULL;
 // Do this:
-$value = VarCheck::take($variable)->key->foo->my_function();
+$value = VarCheck::take($variable)->key->foo->element->my_function();
 ```
 
 
