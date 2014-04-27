@@ -117,7 +117,7 @@ class VarCheck {
   /**
    * Universal validator.
    *
-   * @param callable $callback
+   * @param Closure $callback
    *  Custom function to for value validation. Has to return a BOOL value.
    * @param mixed
    *  All additional arguments go to the validator.
@@ -125,7 +125,7 @@ class VarCheck {
    * @return Bool
    *  Validation success.
    */
-  public function validateWith(callable $callback) {
+  public function validateWith(Closure $callback) {
     $extra_arguments = func_get_args();
     array_shift($extra_arguments);
     array_unshift($extra_arguments, $this->value);

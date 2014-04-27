@@ -48,12 +48,25 @@ VarCheck::take($myComplexVar)->key(1)->attr('name')->exist(); // TRUE;
 VarCheck::take($myComplexVar)->{'1'}->name->exist(); // TRUE;
 ```
 
+
 Get the nested value
 --------------------
 
 ```php
 VarCheck::take($myComplexVar)->key(1)->attr('name')->value(); // John Doe;
 ```
+
+
+Call a function on the value if exist
+-------------------------------------
+
+```php
+// Instead of this:
+$value = isset($variable['key']['foo']->element) ? my_function($variable['key']['foo']->element) : NULL;
+// Do this:
+$value = VarCheck::take($variable)->key->foo->my_function();
+```
+
 
 Failsafe check in case it does not exist
 ----------------------------------------
@@ -62,6 +75,7 @@ Failsafe check in case it does not exist
 VarCheck::take($myComplexVar)->key(1)->attr('job')->exist(); // FALSE;
 VarCheck::take($myComplexVar)->key(1)->attr('job')->attr('title')->exist(); // FALSE;
 ```
+
 
 Check and value at the same time
 --------------------------------
@@ -75,6 +89,7 @@ if ($value = VarCheck::take($form_status)->values->{'#node'}->field_image->{LANG
   // Use $value;
 }
 ```
+
 
 Custom validation
 -----------------
