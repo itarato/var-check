@@ -65,6 +65,9 @@ Call a function on the value if exist
 $value = isset($variable['key']['foo']->element) ? my_function($variable['key']['foo']->element) : NULL;
 // Do this:
 $value = VarCheck::take($variable)->key->foo->element->my_function();
+// Or:
+$myClassInstance;
+$value = arCheck::take($variable)->key->foo->element->call(array($myClassInstance, 'instanceFunction'));
 ```
 
 
@@ -95,7 +98,7 @@ Custom validation
 -----------------
 
 ```php
-VarCheck::take($myVar)->key(3)->attr('title')->validateWith(function ($v) {
+VarCheck::take($myVar)->key(3)->attr('title')->call(function ($v) {
   return $v > 10;
 });
 ```

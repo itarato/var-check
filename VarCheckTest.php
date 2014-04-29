@@ -137,14 +137,14 @@ class VarCheckTest extends PHPUnit_Framework_TestCase {
 
   public function testValidationCallback() {
     $this->assertTrue(
-      VarCheck::take($this->object)->attr('bar')->attr('baz')->validateWith(function($v) {
+      VarCheck::take($this->object)->attr('bar')->attr('baz')->call(function($v) {
         return is_numeric($v);
       }),
       'Object is numeric.'
     );
 
     $this->assertTrue(
-      VarCheck::take($this->mixed)->var->validateWith(function ($string_a, $string_b) {
+      VarCheck::take($this->mixed)->var->call(function ($string_a, $string_b) {
         return $string_a === $string_b;
       }, 'foobar')
     );
@@ -152,16 +152,22 @@ class VarCheckTest extends PHPUnit_Framework_TestCase {
 
   public function testValidationCallbackFail() {
     $this->assertFalse(
-      VarCheck::take($this->object)->attr('bar')->attr('baz')->validateWith(function($v) {
+      VarCheck::take($this->object)->attr('bar')->attr('baz')->call(function($v) {
         return is_string($v);
       }),
       'Object is numeric.'
     );
 
     $this->assertFalse(
-      VarCheck::take($this->mixed)->var->validateWith(function ($string_a, $string_b) {
+      VarCheck::take($this->mixed)->var->call(function ($string_a, $string_b) {
         return $string_a === $string_b;
       }, 'foobar_no_match')
+    );
+
+    $this->assertNull(
+      VarCheck::take($this->mixed)->var->no_var->call(function ($string_a, $string_b) {
+        return $string_a === $string_b;
+      }, 'foobar')
     );
   }
 
