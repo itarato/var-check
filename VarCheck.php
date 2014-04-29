@@ -117,14 +117,14 @@ class VarCheck {
   /**
    * Universal function applicator.
    *
-   * @param Closure $callback
+   * @param callable $callback
    *  Custom function to call with the value (and arguments in it).
    * @param mixed
    *  All additional arguments go to the validator.
    *
    * @return mixed
    */
-  public function call(Closure $callback) {
+  public function call($callback) {
     if (!$this->exist()) {
       return NULL;
     }

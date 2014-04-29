@@ -148,6 +148,27 @@ class VarCheckTest extends PHPUnit_Framework_TestCase {
         return $string_a === $string_b;
       }, 'foobar')
     );
+
+    $this->assertEquals(
+      6,
+      VarCheck::take($this->mixed)->var->call(array('VarCheckFooBar', 'classCharCount'))
+    );
+
+    $instance = new VarCheckFooBar();
+    $this->assertEquals(
+      6,
+      VarCheck::take($this->mixed)->var->call(array($instance, 'instanceCharCount'))
+    );
+
+    $this->assertEquals(
+      6,
+      VarCheck::take($this->mixed)->var->call('varcheck_foo_bar_char_count')
+    );
+
+    $this->assertEquals(
+      6,
+      VarCheck::take($this->mixed)->var->varcheck_foo_bar_char_count()
+    );
   }
 
   public function testValidationCallbackFail() {
@@ -227,3 +248,20 @@ class VarCheckTest extends PHPUnit_Framework_TestCase {
   }
 
 }
+
+class VarCheckFooBar {
+
+  public function instanceCharCount($foo) {
+    return strlen($foo);
+  }
+
+  public static function classCharCount($foo) {
+    return strlen($foo);
+  }
+
+}
+
+function varcheck_foo_bar_char_count($word) {
+  return strlen($word);
+}
+
