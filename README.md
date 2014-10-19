@@ -4,6 +4,8 @@ VarCheck
 
 [![Build Status](https://travis-ci.org/itarato/var-check.png?branch=master)](https://travis-ci.org/itarato/var-check)
 
+[![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/itarato/var-check/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/itarato/var-check/?branch=master)
+
 
 Changelog
 ---------
