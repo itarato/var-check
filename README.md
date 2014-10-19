@@ -58,9 +58,9 @@ $output = isset($myComplexVar[1]) && isset($myComplexVar[1]->name) ? $myComplexV
 # Solution
 
 ```php
-$output = VarCheck::take($myComplexVar)->key(1)->attr('name')->value($otherwise);
+$output = VarCheck::make($myComplexVar)->_key(1)->_attr('name')->_value($otherwise);
 // or even simpler:
-$output = VarCheck::take($myComplexVar)->{'1'}->name->value($otherwise);
+$output = VarCheck::make($myComplexVar)->{'1'}->name->_value($otherwise);
 ```
 
 
@@ -68,9 +68,9 @@ Checking if the nested value exist
 ----------------------------------
 
 ```php
-VarCheck::take($myComplexVar)->key(1)->attr('name')->exist(); // TRUE;
+VarCheck::make($myComplexVar)->_key(1)->_attr('name')->_exist(); // TRUE;
 // or:
-VarCheck::take($myComplexVar)->{'1'}->name->exist(); // TRUE;
+VarCheck::make($myComplexVar)->{'1'}->name->_exist(); // TRUE;
 ```
 
 
@@ -78,7 +78,7 @@ Get the nested value
 --------------------
 
 ```php
-VarCheck::take($myComplexVar)->key(1)->attr('name')->value(); // John Doe;
+VarCheck::make($myComplexVar)->_key(1)->_attr('name')->_value(); // John Doe;
 ```
 
 
@@ -89,10 +89,10 @@ Call a function on the value if exist
 // Instead of this:
 $value = isset($variable['key']['foo']->element) ? my_function($variable['key']['foo']->element) : NULL;
 // Do this:
-$value = VarCheck::take($variable)->key->foo->element->my_function();
+$value = VarCheck::make($variable)->key->foo->element->my_function();
 // Or:
 $myClassInstance;
-$value = arCheck::take($variable)->key->foo->element->call(array($myClassInstance, 'instanceFunction'));
+$value = arCheck::make($variable)->key->foo->element->call(array($myClassInstance, 'instanceFunction'));
 ```
 
 
@@ -100,8 +100,8 @@ Failsafe check in case it does not exist
 ----------------------------------------
 
 ```php
-VarCheck::take($myComplexVar)->key(1)->attr('job')->exist(); // FALSE;
-VarCheck::take($myComplexVar)->key(1)->attr('job')->attr('title')->exist(); // FALSE;
+VarCheck::make($myComplexVar)->_key(1)->_attr('job')->_exist(); // FALSE;
+VarCheck::make($myComplexVar)->_key(1)->_attr('job')->_attr('title')->_exist(); // FALSE;
 ```
 
 
@@ -109,11 +109,11 @@ Check and value at the same time
 --------------------------------
 
 ```php
-if ($value = VarCheck::take($form_status)->key('values')->key('#node')->attr('field_image')->key(LANGUAGE_NONE)->key(0)->key('item')->key('fid')->value()) {
+if ($value = VarCheck::make($form_status)->_key('values')->_key('#node')->_attr('field_image')->_key(LANGUAGE_NONE)->_key(0)->_key('item')->_key('fid')->_value()) {
   // Use $value;
 }
 // or:
-if ($value = VarCheck::take($form_status)->values->{'#node'}->field_image->{LANGUAGE_NONE}->{'0'}->item->fid->value()) {
+if ($value = VarCheck::make($form_status)->values->{'#node'}->field_image->{LANGUAGE_NONE}->{'0'}->item->fid->_value()) {
   // Use $value;
 }
 ```
@@ -123,7 +123,7 @@ Custom validation
 -----------------
 
 ```php
-VarCheck::take($myVar)->key(3)->attr('title')->call(function ($v) {
+VarCheck::make($myVar)->_key(3)->_attr('title')->call(function ($v) {
   return $v > 10;
 });
 ```
