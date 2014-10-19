@@ -37,25 +37,25 @@ class VarCheckTest extends PHPUnit_Framework_TestCase {
 
   public function testValue() {
     $this->assertEquals(
-      VarCheck::take($this->var)->value(),
+      VarCheck::make($this->var)->_value(),
       'foobar',
       'Value is foobar'
     );
 
     $this->assertEquals(
-      VarCheck::take($this->array)->key('foo')->key('bar')->value(),
+      VarCheck::make($this->array)->_key('foo')->_key('bar')->_value(),
       1,
       'Array is 1'
     );
 
     $this->assertEquals(
-      VarCheck::take($this->object)->attr('bar')->attr('baz')->value(),
+      VarCheck::make($this->object)->_attr('bar')->_attr('baz')->_value(),
       1,
       'Object is 1'
     );
 
     $this->assertEquals(
-      VarCheck::take($this->mixed)->key('object')->attr('foo')->value(),
+      VarCheck::make($this->mixed)->_key('object')->_attr('foo')->_value(),
       'bar',
       'Mixed is bar'
     );
@@ -63,22 +63,22 @@ class VarCheckTest extends PHPUnit_Framework_TestCase {
 
   public function testExist() {
     $this->assertTrue(
-      VarCheck::take($this->var)->exist(),
+      VarCheck::make($this->var)->_exist(),
       'Var exists'
     );
 
     $this->assertTrue(
-      VarCheck::take($this->array)->key('foo')->key('bar')->exist(),
+      VarCheck::make($this->array)->_key('foo')->_key('bar')->_exist(),
       'Array exists'
     );
 
     $this->assertTrue(
-      VarCheck::take($this->object)->attr('bar')->attr('baz')->exist(),
+      VarCheck::make($this->object)->_attr('bar')->_attr('baz')->_exist(),
       'Object exists'
     );
 
     $this->assertTrue(
-      VarCheck::take($this->mixed)->key('object')->attr('foo')->exist(),
+      VarCheck::make($this->mixed)->_key('object')->_attr('foo')->_exist(),
       'Mixed exists'
     );
   }
@@ -86,107 +86,102 @@ class VarCheckTest extends PHPUnit_Framework_TestCase {
   public function testNotExist() {
     $missing_value = NULL;
     $this->assertFalse(
-      VarCheck::take($missing_value)->exist()
+      VarCheck::make($missing_value)->_exist()
     );
 
     $this->assertFalse(
-      VarCheck::take($this->var)->attr('foo')->exist(),
+      VarCheck::make($this->var)->_attr('foo')->_exist(),
       'Var does not exists'
     );
 
     $this->assertFalse(
-      VarCheck::take($this->var)->key('foo')->exist(),
+      VarCheck::make($this->var)->_key('foo')->_exist(),
       'Var does not exists'
     );
 
     $this->assertFalse(
-      VarCheck::take($this->var)->key('foo')->attr('foo')->exist(),
+      VarCheck::make($this->var)->_key('foo')->_attr('foo')->_exist(),
       'Var does not exists'
     );
 
     $this->assertFalse(
-      VarCheck::take($this->array)->key('foo')->key('foo')->exist(),
+      VarCheck::make($this->array)->_key('foo')->_key('foo')->_exist(),
       'Array does not exists'
     );
 
     $this->assertFalse(
-      VarCheck::take($this->array)->key(123)->key('foo')->exist(),
+      VarCheck::make($this->array)->_key(123)->_key('foo')->_exist(),
       'Array does not exists'
     );
 
     $this->assertFalse(
-      VarCheck::take($this->object)->attr('rabbit')->exist(),
+      VarCheck::make($this->object)->_attr('rabbit')->_exist(),
       'Object does not exists'
     );
 
     $this->assertFalse(
-      VarCheck::take($this->object)->attr('rabbit')->attr('chicken')->exist(),
+      VarCheck::make($this->object)->_attr('rabbit')->_attr('chicken')->_exist(),
       'Object does not exists'
     );
 
     $this->assertFalse(
-      VarCheck::take($this->mixed)->attr('object')->attr('foo')->exist(),
+      VarCheck::make($this->mixed)->_attr('object')->_attr('foo')->_exist(),
       'Mixed does not exists'
     );
 
     $this->assertFalse(
-      VarCheck::take($this->mixed)->key('object')->key('foo')->exist(),
+      VarCheck::make($this->mixed)->_key('object')->_key('foo')->_exist(),
       'Mixed does not exists'
     );
   }
 
   public function testValidationCallback() {
     $this->assertTrue(
-      VarCheck::take($this->object)->attr('bar')->attr('baz')->call(function($v) {
+      VarCheck::make($this->object)->_attr('bar')->_attr('baz')->_call(function($v) {
         return is_numeric($v);
       }),
       'Object is numeric.'
     );
 
     $this->assertTrue(
-      VarCheck::take($this->mixed)->var->call(function ($string_a, $string_b) {
+      VarCheck::make($this->mixed)->var->_call(function ($string_a, $string_b) {
         return $string_a === $string_b;
       }, 'foobar')
     );
 
     $this->assertEquals(
       6,
-      VarCheck::take($this->mixed)->var->call(array('VarCheckFooBar', 'classCharCount'))
+      VarCheck::make($this->mixed)->var->_call(array('VarCheckFooBar', 'classCharCount'))
     );
 
     $instance = new VarCheckFooBar();
     $this->assertEquals(
       6,
-      VarCheck::take($this->mixed)->var->call(array($instance, 'instanceCharCount'))
+      VarCheck::make($this->mixed)->var->_call(array($instance, 'instanceCharCount'))
     );
 
     $this->assertEquals(
       6,
-      VarCheck::take($this->mixed)->var->call('varcheck_foo_bar_char_count')
-    );
-
-    $this->assertEquals(
-      6,
-      VarCheck::take($this->mixed)->var->varcheck_foo_bar_char_count()
+      VarCheck::make($this->mixed)->var->_call('varcheck_foo_bar_char_count')
     );
   }
 
   public function testValidationCallbackFail() {
     $this->assertFalse(
-      VarCheck::take($this->object)->attr('bar')->attr('baz')->call(function($v) {
+      VarCheck::make($this->object)->_attr('bar')->_attr('baz')->_call(function($v) {
         return is_string($v);
       }),
       'Object is numeric.'
     );
 
     $this->assertFalse(
-      VarCheck::take($this->mixed)->var->call(function ($string_a, $string_b) {
+      VarCheck::make($this->mixed)->var->_call(function ($string_a, $string_b) {
         return $string_a === $string_b;
       }, 'foobar_no_match')
     );
 
     $this->assertNull(
-      VarCheck::take($this->mixed)->var->no_var->call(function ($string_a, $string_b) {
+      VarCheck::make($this->mixed)->var->no_var->_call(function ($string_a, $string_b) {
         return $string_a === $string_b;
       }, 'foobar')
     );
@@ -194,57 +189,66 @@ class VarCheckTest extends PHPUnit_Framework_TestCase {
 
   public function testDefaultValue() {
     $default_value = 'foobar';
-    $this->assertEquals(VarCheck::take($this->object)->attr('abc')->key('not exist')->value(), FALSE, 'Default value is False if value does not exist.');
-    $this->assertEquals(VarCheck::take($this->object)->attr('abc')->key('not exist')->value($default_value), $default_value, 'Default value is defined if value does not exist.');
+    $this->assertEquals(VarCheck::make($this->object)->_attr('abc')->_key('not exist')->_value(), FALSE, 'Default value is False if value does not exist.');
+    $this->assertEquals(VarCheck::make($this->object)->_attr('abc')->_key('not exist')->_value($default_value), $default_value, 'Default value is defined if value does not exist.');
   }
 
   public function testNonStaticGeneration() {
     $check = new VarCheck($this->object);
-    $check->attr('bar');
-    $check->attr('baz');
-    $this->assertTrue($check->exist(), 'Value exist');
+    $check->_attr('bar');
+    $check->_attr('baz');
+    $this->assertTrue($check->_exist(), 'Value exist');
   }
 
   public function testMagicGetterWay() {
-    $this->assertEquals(VarCheck::take($this->mixed)->var->value(), 'foobar');
-    $this->assertEquals(VarCheck::take($this->mixed)->array->foo->bar->value(), 1);
-    $this->assertEquals(VarCheck::take($this->mixed)->array->{'2'}->value(), FALSE);
-    $this->assertEquals(VarCheck::take($this->mixed)->object->foo->value(), 'bar');
-    $this->assertEquals(VarCheck::take($this->mixed)->object->bar->baz->value(), 1);
+    $this->assertEquals(VarCheck::make($this->mixed)->var->_value(), 'foobar');
+    $this->assertEquals(VarCheck::make($this->mixed)->array->foo->bar->_value(), 1);
+    $this->assertEquals(VarCheck::make($this->mixed)->array->{'2'}->_value(), FALSE);
+    $this->assertEquals(VarCheck::make($this->mixed)->object->foo->_value(), 'bar');
+    $this->assertEquals(VarCheck::make($this->mixed)->object->bar->baz->_value(), 1);
 
-    $this->assertTrue(VarCheck::take($this->mixed)->var->exist());
-    $this->assertTrue(VarCheck::take($this->mixed)->array->foo->bar->exist());
-    $this->assertTrue(VarCheck::take($this->mixed)->array->{'2'}->exist());
-    $this->assertTrue(VarCheck::take($this->mixed)->object->exist());
-    $this->assertTrue(VarCheck::take($this->mixed)->object->bar->exist());
+    $this->assertTrue(VarCheck::make($this->mixed)->var->_exist());
+    $this->assertTrue(VarCheck::make($this->mixed)->array->foo->bar->_exist());
+    $this->assertTrue(VarCheck::make($this->mixed)->array->{'2'}->_exist());
+    $this->assertTrue(VarCheck::make($this->mixed)->object->_exist());
+    $this->assertTrue(VarCheck::make($this->mixed)->object->bar->_exist());
 
-    $this->assertFalse(VarCheck::take($this->mixed)->var2->exist());
-    $this->assertFalse(VarCheck::take($this->mixed)->array->foo->bar->baz->exist());
-    $this->assertFalse(VarCheck::take($this->mixed)->array->{'5'}->exist());
-    $this->assertFalse(VarCheck::take($this->mixed)->object_fake->exist());
-    $this->assertFalse(VarCheck::take($this->mixed)->object->bar->{'3'}->exist());
+    $this->assertFalse(VarCheck::make($this->mixed)->var2->_exist());
+    $this->assertFalse(VarCheck::make($this->mixed)->array->foo->bar->baz->_exist());
+    $this->assertFalse(VarCheck::make($this->mixed)->array->{'5'}->_exist());
+    $this->assertFalse(VarCheck::make($this->mixed)->object_fake->_exist());
+    $this->assertFalse(VarCheck::make($this->mixed)->object->bar->{'3'}->_exist());
   }
 
   public function testFunctionCallOnValue() {
-    $this->assertEquals(VarCheck::take($this->mixed)->array->foo->bar->min(2), 1);
-    $this->assertEquals(VarCheck::take($this->mixed)->array->foo->bar->min(-2), -2);
-    $this->assertEquals(VarCheck::take($this->mixed)->array->foo->bar->max(2), 2);
-    $this->assertEquals(VarCheck::take($this->mixed)->array->foo->bar->max(-2), 1);
+    $this->assertEquals(VarCheck::make($this->mixed)->array->foo->bar->_call('min', 2), 1);
+    $this->assertEquals(VarCheck::make($this->mixed)->array->foo->bar->_call('min', -2), -2);
+    $this->assertEquals(VarCheck::make($this->mixed)->array->foo->bar->_call('max', 2), 2);
+    $this->assertEquals(VarCheck::make($this->mixed)->array->foo->bar->_call('max', -2), 1);
 
     $array_sample = array(
       'foo' => array(1, 2, 3, 4),
     );
-    $this->assertEquals(VarCheck::take($array_sample)->foo->count(), 4);
+    $this->assertEquals(VarCheck::make($array_sample)->foo->_call('count'), 4);
 
     // Non existent value calls.
-    $this->assertNull(VarCheck::take($array_sample)->bar->count());
+    $this->assertNull(VarCheck::make($array_sample)->bar->_call('count'));
   }
 
   public function testCloning() {
-    $item = VarCheck::take($this->mixed);
+    $item = VarCheck::make($this->mixed);
     $item_clone = clone $item;
-    $this->assertEquals($item->var->value(), 'foobar');
-    $this->assertEquals($item_clone->var->value(), 'foobar');
+    $this->assertEquals($item->var->_value(), 'foobar');
+    $this->assertEquals($item_clone->var->_value(), 'foobar');
+  }
+
+  public function testCallingInstanceFunction() {
+    $foobar = new VarCheckFooBar();
+    $foo = array(
+      'bar' => $foobar,
+    );
+
+    $this->assertEquals(6, VarCheck::make($foo)->bar->instanceCharCount('foobar')->_value(), 'Calling instance function with argument return proper value.');
   }
 
 }

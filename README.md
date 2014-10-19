@@ -5,6 +5,31 @@ VarCheck
 [![Build Status](https://travis-ci.org/itarato/var-check.png?branch=master)](https://travis-ci.org/itarato/var-check)
 
 
+Changelog
+---------
+
+#Version 2
+- Instance creation:
+```
+VarCheck::make($variable);
+```
+- VarCheck methods got underscore (avoiding real object properties, functions or array keys):
+```
+VarCheck::make($variable)->_value();
+VarCheck::make($variable)->_empty();
+```
+- ```__call``` magic method now calls the instance function of the current object:
+```
+class User {
+  function getParent() {
+    return $this->parent;
+  }
+}
+$child = new User();
+VarCheck::make($child)->getParent()->_value();
+```
+
+
 VarCheck is a single class to verify nested complex variable without lots of isset() and exist().
 
 To avoid multiple level of isset/exist/etc this class provides an easy way to verify nested values in a variable.

@@ -49,7 +49,7 @@ class VarCheck {
    * @return VarCheck
    *  Instance object.
    */
-  public static function take($value) {
+  public static function make($value) {
     return new VarCheck($value);
   }
 
@@ -59,7 +59,7 @@ class VarCheck {
    * @return bool
    *  TRUE if the value exist and different from NULL.
    */
-  public function exist() {
+  public function _exist() {
     return isset($this->value);
   }
 
@@ -72,7 +72,7 @@ class VarCheck {
    * @return VarCheck $this
    *  Instance.
    */
-  public function attr($attr) {
+  public function _attr($attr) {
     if (isset($this->value) && is_object($this->value) && isset($this->value->{$attr})) {
       $this->value = $this->value->{$attr};
     }
@@ -91,7 +91,7 @@ class VarCheck {
    * @return VarCheck $this
    *  Instance.
    */
-  public function key($key) {
+  public function _key($key) {
     if (isset($this->value) && is_array($this->value) && isset($this->value[$key])) {
       $this->value = $this->value[$key];
     }
@@ -110,7 +110,7 @@ class VarCheck {
    * @return Mixed
    *  Value.
    */
-  public function value($default_value = FALSE) {
+  public function _value($default_value = FALSE) {
     return isset($this->value) ? $this->value : $default_value;
   }
 
@@ -124,8 +124,8 @@ class VarCheck {
    *
    * @return mixed
    */
-  public function call($callback) {
-    if (!$this->exist()) {
+  public function _call($callback) {
+    if (!$this->_exist()) {
       return NULL;
     }
 
@@ -170,12 +170,15 @@ class VarCheck {
    */
   public function __call($name, array $arguments = array()) {
     // No value - call nothing.
-    if (!$this->exist()) {
-      return NULL;
+    if (
+      !$this->_exist() ||
+      !method_exists($this->value, $name)
+    ) {
+      return $this;
     }
 
-    array_unshift($arguments, $this->value);
-    return call_user_func_array($name, $arguments);
+    $this->value = call_user_func_array(array($this->value, $name), $arguments);
+    return $this;
   }
 
 }
