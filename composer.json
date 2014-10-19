@@ -1,5 +1,5 @@
 {
-  "name": "Variable Checker",
+  "name": "itarato/VarCheck",
   "description": "Accessing properties, keys and instance methods without checking them all the time.",
   "require": { },
   "license": "MIT",
