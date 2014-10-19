@@ -1,0 +1,11 @@
+{
+  "name": "Variable Checker",
+  "description": "Accessing properties, keys and instance methods without checking them all the time.",
+  "require": { },
+  "license": "MIT",
+  "autoload": {
+    "psr-4": {
+      "": "src/"
+    }
+  }
+}

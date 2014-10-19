@@ -10,16 +10,16 @@ Changelog
 
 #Version 2
 - Instance creation:
-```
+```PHP
 VarCheck::make($variable);
 ```
 - VarCheck methods got underscore (avoiding real object properties, functions or array keys):
-```
+```PHP
 VarCheck::make($variable)->_value();
 VarCheck::make($variable)->_empty();
 ```
 - ```__call``` magic method now calls the instance function of the current object:
-```
+```PHP
 class User {
   function getParent() {
     return $this->parent;
@@ -123,7 +123,7 @@ Custom validation
 -----------------
 
 ```php
-VarCheck::make($myVar)->_key(3)->_attr('title')->call(function ($v) {
+VarCheck::make($myVar)->_key(3)->_attr('title')->_call(function ($v) {
   return $v > 10;
 });
 ```

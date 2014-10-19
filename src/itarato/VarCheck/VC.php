@@ -4,6 +4,8 @@
  * VarCheck class file.
  */
 
+namespace itarato\VarCheck;
+
 /**
  * Class VarCheck
  * Nested variable validator.
@@ -20,7 +22,7 @@
  * VarCheck::take($myComplexVar)->key(1)->attr('job')->exist(); // FALSE;
  * VarCheck::take($myComplexVar)->key(1)->attr('job')->attr('title')->exist(); // FALSE;
  */
-class VarCheck {
+class VC {
 
   /**
    * The internal variable.
@@ -50,7 +52,7 @@ class VarCheck {
    *  Instance object.
    */
   public static function make($value) {
-    return new VarCheck($value);
+    return new VC($value);
   }
 
   /**
@@ -178,6 +180,24 @@ class VarCheck {
     }
 
     $this->value = call_user_func_array(array($this->value, $name), $arguments);
+    return $this;
+  }
+
+  public function _ifInstanceOf($class) {
+    if (!$this->_exist()) {
+      return $this;
+    }
+
+    if (!($this->value instanceof $class)) {
+      $this->_unset();
+    }
+  }
+
+  /**
+   * Unset stored value.
+   */
+  private function _unset() {
+    unset($this->value);
     return $this;
   }
 
