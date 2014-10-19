@@ -191,8 +191,10 @@ class VCTest extends PHPUnit_Framework_TestCase {
 
   public function testDefaultValue() {
     $default_value = 'foobar';
-    $this->assertEquals(VC::make($this->object)->_attr('abc')->_key('not exist')->_value(), FALSE, 'Default value is False if value does not exist.');
     $this->assertEquals(VC::make($this->object)->_attr('abc')->_key('not exist')->_value($default_value), $default_value, 'Default value is defined if value does not exist.');
+
+    $this->setExpectedException('itarato\VarCheck\Exception\MissingDefaultValueException');
+    $this->assertEquals(VC::make($this->object)->_attr('abc')->_key('not exist')->_value(), FALSE, 'Default value is False if value does not exist.');
   }
 
   public function testNonStaticGeneration() {
@@ -251,6 +253,22 @@ class VCTest extends PHPUnit_Framework_TestCase {
     );
 
     $this->assertEquals(6, VC::make($foo)->bar->instanceCharCount('foobar')->_value(), 'Calling instance function with argument return proper value.');
+  }
+
+  public function testValueStack() {
+    $foobar = array('foo' => array('bar' => 123));
+    $this->assertFalse(VC::make($foobar)->foo->bar->_backupPush()->baz->_exist());
+    $this->assertEquals(
+      123,
+      VC::make($foobar)->foo->bar->_backupPush()->baz->_backupPop()->_value()
+    );
+    $this->assertEquals(
+      123,
+      VC::make($foobar)->foo->_backupPush()->baz->zorb->_backupPop()->bar->_value()
+    );
+
+    $this->setExpectedException('itarato\VarCheck\Exception\NoBackupException');
+    VC::make($foobar)->foo->_backupPush()->baz->zorb->_backupPop()->_backupPop();
   }
 
 }

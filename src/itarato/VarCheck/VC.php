@@ -1,13 +1,17 @@
 <?php
 /**
  * @file
- * VarCheck class file.
+ *
+ * VC class file.
  */
 
 namespace itarato\VarCheck;
 
+use itarato\VarCheck\Exception\MissingDefaultValueException;
+use itarato\VarCheck\Exception\NoBackupException;
+
 /**
- * Class VarCheck
+ * Class VC
  * Nested variable validator.
  *
  * To avoid multiple level of isset/exist/etc this class provides an easy way to verify nested values in a variable.
@@ -17,10 +21,10 @@ namespace itarato\VarCheck;
  * Usage:
  * $myComplexVar = array(1 => new stdClass());
  * $myComplexVar[1]->name = 'John Doe';
- * VarCheck::take($myComplexVar)->key(1)->attr('name')->exist(); // TRUE;
- * VarCheck::take($myComplexVar)->key(1)->attr('name')->value(); // John Doe;
- * VarCheck::take($myComplexVar)->key(1)->attr('job')->exist(); // FALSE;
- * VarCheck::take($myComplexVar)->key(1)->attr('job')->attr('title')->exist(); // FALSE;
+ * VC::make($myComplexVar)->key(1)->attr('name')->exist(); // TRUE;
+ * VC::make($myComplexVar)->key(1)->attr('name')->value(); // John Doe;
+ * VC::make($myComplexVar)->key(1)->attr('job')->exist(); // FALSE;
+ * VC::make($myComplexVar)->key(1)->attr('job')->attr('title')->exist(); // FALSE;
  */
 class VC {
 
@@ -32,8 +36,15 @@ class VC {
   private $value;
 
   /**
+   * Backup storage. Used to store values for later restore and reuse.
+   *
+   * @var array
+   */
+  private $backups = array();
+
+  /**
    * Constructor.
-   * Can be called directly, or just simply through: VarCheck::take($value);
+   * Can be called directly, or just simply through: VC::make($value);
    *
    * @param Mixed $value
    *  Variable.
@@ -43,12 +54,12 @@ class VC {
   }
 
   /**
-   * Getting a quick VarCheck instance.
+   * Getting a quick VC instance.
    *
    * @param Mixed $value
    *  Variable.
    * 
-   * @return VarCheck
+   * @return VC
    *  Instance object.
    */
   public static function make($value) {
@@ -71,7 +82,7 @@ class VC {
    * @param String|Integer $attr
    *  Attribute string.
    *
-   * @return VarCheck $this
+   * @return VC
    *  Instance.
    */
   public function _attr($attr) {
@@ -79,7 +90,7 @@ class VC {
       $this->value = $this->value->{$attr};
     }
     else {
-      unset($this->value);
+      $this->_unset();
     }
     return $this;
   }
@@ -90,7 +101,7 @@ class VC {
    * @param String|Integer $key
    *  Key string.
    *
-   * @return VarCheck $this
+   * @return VC $this
    *  Instance.
    */
   public function _key($key) {
@@ -98,22 +109,31 @@ class VC {
       $this->value = $this->value[$key];
     }
     else {
-      unset($this->value);
+      $this->_unset();
     }
     return $this;
   }
 
   /**
    * Returns the value.
+   * Any passed value will serve as a default return value.
+   * In case there is no argument and the value does not exit it throws an exception.
    *
-   * @param mixed $default_value
-   *  Value to return if the original value does not exist.
-   *
+   * @throws \itarato\VarCheck\Exception\MissingDefaultValueException
    * @return Mixed
    *  Value.
    */
-  public function _value($default_value = FALSE) {
-    return isset($this->value) ? $this->value : $default_value;
+  public function _value() {
+    if ($this->_exist()) {
+      return $this->value;
+    }
+
+    $args = func_get_args();
+    if (count($args) == 1) {
+      return $args[0];
+    }
+
+    throw new MissingDefaultValueException();
   }
 
   /**
@@ -154,8 +174,9 @@ class VC {
       $this->value = $this->value[$key];
     }
     else {
-      unset($this->value);
+      $this->_unset();
     }
+
     return $this;
   }
 
@@ -183,6 +204,13 @@ class VC {
     return $this;
   }
 
+  /**
+   * Only keeps value if the value is an instance of a given class.
+   *
+   * @param string $class
+   *  Class to check against
+   * @return VC
+   */
   public function _ifInstanceOf($class) {
     if (!$this->_exist()) {
       return $this;
@@ -191,13 +219,61 @@ class VC {
     if (!($this->value instanceof $class)) {
       $this->_unset();
     }
+
+    return $this;
+  }
+
+  /**
+   * Only keeps value if the value is a subclass of a given class.
+   *
+   * @param string $class
+   *  Class to check against
+   * @return VC
+   */
+  public function _ifSubclassOf($class) {
+    if (!$this->_exist()) {
+      return $this;
+    }
+
+    if (!is_subclass_of($this->value, $class)) {
+      $this->_unset();
+    }
+
+    return $this;
   }
 
   /**
    * Unset stored value.
+   *
+   * @return VC
    */
   private function _unset() {
     unset($this->value);
+    return $this;
+  }
+
+  /**
+   * Save current value into a stack.
+   *
+   * @return VC
+   */
+  public function _backupPush() {
+    $this->backups[] = $this->value;
+    return $this;
+  }
+
+  /**
+   * Restore the latest saved value.
+   *
+   * @return VC
+   * @throws \itarato\VarCheck\Exception\NoBackupException
+   */
+  public function _backupPop() {
+    if (count($this->backups) == 0) {
+      throw new NoBackupException();
+    }
+
+    $this->value = array_pop($this->backups);
     return $this;
   }
 
