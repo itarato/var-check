@@ -6,6 +6,7 @@ VarCheck
 
 [![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/itarato/var-check/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/itarato/var-check/?branch=master)
 
+[![Codeship Status for itarato/var-check](https://www.codeship.io/projects/fa9f25d0-3d92-0132-c1d2-06eb26a6e604/status)](https://www.codeship.io/projects/43300)
 
 Changelog
 ---------
@@ -34,6 +35,14 @@ class User {
 }
 $child = new User();
 VC::make($child)->getParent()->_value();
+```
+
+Install
+-------
+
+- Through composer: ```"require": "itarato/var-check": "2.*@dev"```
+```
+$ echo '{"require": {"itarato/var-check": "2.*@dev"}}' > composer.json ; composer install
 ```
 
 
