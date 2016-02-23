@@ -191,10 +191,12 @@ class VCTest extends PHPUnit_Framework_TestCase {
 
   public function testDefaultValue() {
     $default_value = 'foobar';
-    $this->assertEquals(VC::make($this->object)->_attr('abc')->_key('not exist')->_value($default_value), $default_value, 'Default value is defined if value does not exist.');
+    $this->assertEquals(VC::make($this->object)
+      ->_attr('abc')
+      ->_key('not exist')
+      ->_value($default_value), $default_value, 'Default value is defined if value does not exist.');
 
-    $this->setExpectedException('itarato\VarCheck\Exception\MissingDefaultValueException');
-    $this->assertEquals(VC::make($this->object)->_attr('abc')->_key('not exist')->_value(), FALSE, 'Default value is False if value does not exist.');
+    $this->assertEquals(VC::make($this->object)->_attr('abc')->_key('not exist')->_value(), NULL, 'Default value is False if value does not exist.');
   }
 
   public function testNonStaticGeneration() {
@@ -271,6 +273,45 @@ class VCTest extends PHPUnit_Framework_TestCase {
     VC::make($foobar)->foo->_backupPush()->baz->zorb->_backupPop()->_backupPop();
   }
 
+  public function testMissingFunction() {
+    $foobar = new VCFooBar();
+    $foo = array(
+      'bar' => $foobar,
+    );
+
+    $this->assertEquals(NULL, VC::make($foo)->bar->obviouslyMissingMethod('foobar', ['wrong argument'])->_value(), 'Calling wrong instance function.');
+  }
+
+  public function testInstanceCheckValid() {
+    $foobar = new VCFooBar();
+    $this->assertTrue(VC::make($foobar)->_ifInstanceOf('VCFoobar')->_exist());
+  }
+
+  public function testInstanceCheckInvalid() {
+    $foobar = new VCFooBar();
+    $this->assertFalse(VC::make($foobar)->_ifInstanceOf('WrongVCFoobar')->_exist());
+  }
+
+  public function testInstanceCheckOnNull() {
+    $foobar = new VCFooBar();
+    $this->assertFalse(VC::make($foobar)->wrongProperty->_ifInstanceOf('VCFoobar')->_exist());
+  }
+
+  public function testSubclassCheckValid() {
+    $foobar = new VCFooBarSubclass();
+    $this->assertTrue(VC::make($foobar)->_ifSubclassOf('VCFoobar')->_exist());
+  }
+
+  public function testSubclassCheckInvalid() {
+    $foobar = new VCFooBarNotSubclass();
+    $this->assertFalse(VC::make($foobar)->_ifSubclassOf('VCFoobar')->_exist());
+  }
+
+  public function testSubclassCheckOnNull() {
+    $foobar = new VCFooBarSubclass();
+    $this->assertFalse(VC::make($foobar)->wrongProperty->_ifSubclassOf('VCFoobar')->_exist());
+  }
+
 }
 
 class VCFooBar {
@@ -284,6 +325,9 @@ class VCFooBar {
   }
 
 }
+
+class VCFooBarSubclass extends VCFooBar { }
+class VCFooBarNotSubclass { }
 
 function varcheck_foo_bar_char_count($word) {
   return strlen($word);

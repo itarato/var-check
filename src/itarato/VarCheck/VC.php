@@ -7,7 +7,6 @@
 
 namespace itarato\VarCheck;
 
-use itarato\VarCheck\Exception\MissingDefaultValueException;
 use itarato\VarCheck\Exception\NoBackupException;
 
 /**
@@ -21,10 +20,13 @@ use itarato\VarCheck\Exception\NoBackupException;
  * Usage:
  * $myComplexVar = array(1 => new stdClass());
  * $myComplexVar[1]->name = 'John Doe';
- * VC::make($myComplexVar)->key(1)->attr('name')->exist(); // TRUE;
- * VC::make($myComplexVar)->key(1)->attr('name')->value(); // John Doe;
- * VC::make($myComplexVar)->key(1)->attr('job')->exist(); // FALSE;
- * VC::make($myComplexVar)->key(1)->attr('job')->attr('title')->exist(); // FALSE;
+ * VC::make($myComplexVar)->key(1)->attr('name')->_exist(); // TRUE;
+ * VC::make($myComplexVar)->key(1)->attr('name')->_value(); // John Doe;
+ * VC::make($myComplexVar)->key(1)->attr('job')->_exist(); // FALSE;
+ * VC::make($myComplexVar)->{1}->job->title->_exist(); // FALSE;
+ *
+ * Another example shows the simple way of accessing elements/methods by via "native" name"
+ * VC::make($acmeObject)->job->setTitle('new title')->getTitle()->_value();
  */
 class VC {
 
@@ -101,8 +103,8 @@ class VC {
    * @param String|Integer $key
    *  Key string.
    *
-   * @return VC $this
-   *  Instance.
+   * @return VC
+   *  Self instance.
    */
   public function _key($key) {
     if (isset($this->value) && is_array($this->value) && isset($this->value[$key])) {
@@ -119,21 +121,16 @@ class VC {
    * Any passed value will serve as a default return value.
    * In case there is no argument and the value does not exit it throws an exception.
    *
-   * @throws \itarato\VarCheck\Exception\MissingDefaultValueException
-   * @return Mixed
-   *  Value.
+   * @param null $default
+   *  Default value when expected return is missing/invalid.
+   * @return mixed
    */
-  public function _value() {
+  public function _value($default = NULL) {
     if ($this->_exist()) {
       return $this->value;
     }
 
-    $args = func_get_args();
-    if (count($args) == 1) {
-      return $args[0];
-    }
-
-    throw new MissingDefaultValueException();
+    return $default;
   }
 
   /**
@@ -164,7 +161,8 @@ class VC {
    * Key
    *
    * @param $key
-   * @return $this
+   * @return VC
+   *  Self instance.
    */
   public function __get($key) {
     if (isset($this->value) && is_object($this->value) && isset($this->value->{$key})) {
@@ -197,6 +195,7 @@ class VC {
       !$this->_exist() ||
       !method_exists($this->value, $name)
     ) {
+      $this->_unset();
       return $this;
     }
 
