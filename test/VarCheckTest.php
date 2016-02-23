@@ -279,7 +279,7 @@ class VCTest extends PHPUnit_Framework_TestCase {
       'bar' => $foobar,
     );
 
-    $this->assertEquals(NULL, VC::make($foo)->bar->obviouslyMissingMethod('foobar', ['wrong argument'])->_value(), 'Calling wrong instance function.');
+    $this->assertEquals(NULL, VC::make($foo)->bar->obviouslyMissingMethod('foobar', array('wrong argument'))->_value(), 'Calling wrong instance function.');
   }
 
   public function testInstanceCheckValid() {
